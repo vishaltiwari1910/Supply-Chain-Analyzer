@@ -12,7 +12,7 @@ function App() {
   const [loading, setLoading] = useState(false);
 
 
-
+  // Upload Excel
   const handleUpload = async () => {
 
     if (!file) {
@@ -27,7 +27,7 @@ function App() {
     try {
 
       const res = await axios.post(
-        "http://localhost:5000/upload",
+        "https://supply-chain-analyzer.onrender.com/upload",
         formData
       );
 
@@ -46,7 +46,7 @@ function App() {
   };
 
 
-
+  // Generate AI Insights
   const generateInsights = async () => {
 
     try {
@@ -54,7 +54,7 @@ function App() {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/analyze",
+        "https://supply-chain-analyzer.onrender.com/analyze",
         { data }
       );
 
@@ -82,7 +82,7 @@ function App() {
       <h1>AI Supply Chain Analyzer</h1>
 
 
-      {}
+      {/* File Upload */}
 
       <input
         type="file"
@@ -102,7 +102,7 @@ function App() {
       <hr />
 
 
-      {}
+      {/* Summary Cards */}
 
       {
         data.length > 0 && (
@@ -170,7 +170,7 @@ function App() {
       }
 
 
-      {}
+      {/* AI Button */}
 
       {
         data.length > 0 && (
@@ -188,7 +188,7 @@ function App() {
       }
 
 
-      {}
+      {/* Loading */}
 
       {
         loading && (
@@ -197,7 +197,7 @@ function App() {
       }
 
 
-      {}
+      {/* Inventory Table */}
 
       {
         data.length > 0 && (
@@ -246,7 +246,7 @@ function App() {
       }
 
 
-      {}
+      {/* AI Insights */}
 
       {
         insight && (
@@ -255,7 +255,7 @@ function App() {
 
             <h2>AI Insights</h2>
 
-            <p>{insight}</p>
+            <pre>{insight}</pre>
 
           </div>
 
