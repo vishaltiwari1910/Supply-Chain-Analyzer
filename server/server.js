@@ -4,14 +4,8 @@ import XLSX from "xlsx";
 import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
-import fs from "fs";
 
 dotenv.config();
-
-// Create uploads folder if not exists (IMPORTANT for Render)
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads");
-}
 
 const client = new OpenAI({
   apiKey: process.env.GROQ_API_KEY,
@@ -23,34 +17,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Health check
 app.get("/", (req, res) => {
   res.send("Backend is Working!.....");
 });
 
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
+/* 
+🔥 IMPORTANT CHANGE: memory storage instead of disk
+(Render safe)
+*/
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Upload Excel API
+// Upload Excel (FIXED)
 app.post("/upload", upload.single("file"), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const workbook = XLSX.readFile(req.file.path);
+    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
 
     const sheetName = workbook.SheetNames[0];
-
     const sheet = workbook.Sheets[sheetName];
 
     const data = XLSX.utils.sheet_to_json(sheet);
@@ -63,7 +50,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
   }
 });
 
-// AI analysis API
+// AI analysis
 app.post("/analyze", async (req, res) => {
   try {
     const { data } = req.body;
@@ -82,7 +69,7 @@ Analyze this inventory data:
 
 ${JSON.stringify(data)}
 
-Give short business insights in simple format.
+Give short insights.
           `,
         },
       ],
@@ -98,7 +85,6 @@ Give short business insights in simple format.
   }
 });
 
-// Start server
 app.listen(5000, () => {
-  console.log("Server is Working on port 5000....");
+  console.log("Server running on port 5000");
 });
