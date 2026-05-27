@@ -21,14 +21,11 @@ app.get("/", (req, res) => {
   res.send("Backend is Working!.....");
 });
 
-/* 
-🔥 IMPORTANT CHANGE: memory storage instead of disk
-(Render safe)
-*/
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Upload Excel (FIXED)
+
 app.post("/upload", upload.single("file"), (req, res) => {
   try {
     if (!req.file) {
@@ -50,7 +47,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
   }
 });
 
-// AI analysis
+
 app.post("/analyze", async (req, res) => {
   try {
     const { data } = req.body;
